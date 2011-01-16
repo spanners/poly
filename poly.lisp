@@ -135,7 +135,6 @@
 ;; Uses v= to actually compare individual variables.
 (defun vars= (vs1 vs2) (cond ((and (null vs1) (null vs2)) t)
 			     ((and (equal no-vars vs1) (equal no-vars vs2)) t)
-			     ((or (equal no-vars vs1) (equal no-vars vs2)) nil)
 			     (t (and (= (length vs1) (length vs2))
 				     (all (map any (mmap v= vs1 vs2)))))))
 
