@@ -15,9 +15,7 @@
 ;; A 2-pass algorithm:
 ;; Pass 1: For each term, combine like variables into one variable, (simp-vars)
 ;; Pass 2: Combine like terms in whole polynomial into one term. (simp-terms)
-(defun clean (p) (simp-terms 
-		   (simp-vars ;; performs both Pass 3 and Pass 2
-		     p)))
+(defun clean (p) (simp-terms (simp-vars p)))
 
 ;; Pass 2.
 ;; Simplifies the terms in a polynomial by summing collected like terms.
