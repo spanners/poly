@@ -7,7 +7,7 @@
 ;;; Polynomial operators.
 (defun p+ (p1 p2) (clean (append p1 p2)))
 (defun p- (p1 p2) (p+ p1 (negate p2)))
-(defun p* (p1 p2) (clean (pmult (clean p1) (clean p2))))
+(defun p* (p1 p2) (clean (pmult p1 p2)))
 (defun p= (p1 p2) (null (p- p1 p2)))
 
 ;;; ---------------------------------------------------------------------------
@@ -21,12 +21,12 @@
 ;; Simplifies the terms in a polynomial by summing collected like terms.
 (defun simp-terms (p)
   (let ((poly 
-  (simplifier p combine-terms vars= (lambda (x) (vars x)))))
+  (simplifier p combine-terms vars= (lambda (term) (vars term)))))
     (cond ((equal no-vars poly) empty)
 	  (t poly))))
 
 ;; Generic simplifier function used by simp-terms and simp-vars.
-;; Takes a list you want to simplify, 
+;; Takes a poly p you want to simplify, 
 ;; a combiner to perform the summing step to combine the like terms/vars 
 ;; into one,
 ;; a test of equality, either t= or vars= for collecting like terms/vars,
@@ -53,7 +53,7 @@
     (cond ((zerop combined-coef) empty)
 	  (t (mk-term combined-coef (vars (pcar lterms)))))))
 
-;; Produces a list of terms/variables that are like x in list p
+;; Produces a list of terms/variables that are like x in poly p
 (defun collectlike (x p test selector)
   (cond ((null p) empty)
 	((null x) empty)
@@ -74,13 +74,13 @@
 				      (lambda (v) (vcar v))))
 			  (simp-vars (pcdr p))))))
 
-;; Combines like variables into one variable by summing powers
+;; Combines like variables into one variable by summing powers.
 (defun combine-vars (lvars)
   (let ((combined-power (accumulate + 0 (map power lvars))))
     (cond ((zerop combined-power) empty)
 	  (t (mk-var (letter (vcar lvars)) combined-power)))))
 
-;; Produces a list of terms/variables that are not like x in list poly
+;; Produces a list of terms/variables that are not like x in poly p.
 (defun removelike (x p test selector)
   (cond ((null p) empty)
 	((null x) empty)
