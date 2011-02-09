@@ -1,6 +1,6 @@
-(setq poly "/home/simon/git/poly/poly.lisp")
+(setq this-file "/home/simon/git/poly/poly.lisp")
 (setq tests "/home/simon/git/poly/tests.lisp")
-(defun rl () (load poly))
+(defun rl () (load this-file))
 (defun tst () (load tests))
 
 ;;; ---------------------------------------------------------------------------
@@ -31,21 +31,20 @@
 ;; into one,
 ;; a test of equality, either t= or vars= for collecting like terms/vars,
 ;; and a selector to get inside the term/variable to compare for likeness.
-(defun simplifier (L combiner test selector)
-  (cond ((null L) empty)
+(defun simplifier (p combiner test selector)
+  (cond ((null p) empty)
 	(t (let ((simplified ;; save it in "simplified"
 		   (combiner ;; combine like terms/vars into one
 			       (collectlike ;; collect like terms/vars
-				 (car L)    ;; those that are like 1st term/var
-				 L 	    ;; in the whole poly/var list
+				 (pcar p)    ;; those that are like 1st term/var
+				 p 	    ;; in the whole poly/var list
 				 test       ;; using t=/vars= to compare
 				 selector)))) ;; selecting vars/power
-
 	     (cond ((null simplified) empty)
 		   (t (cons simplified ;; build a list of simplified terms/vars
 		      (simplifier
 			(removelike simplified 
-				(cdr L) test selector)
+				(pcdr p) test selector)
 				  combiner test selector))))))))
 
 ;; Combines like terms into one term by summing coefficients
@@ -54,13 +53,13 @@
     (cond ((zerop combined-coef) empty)
 	  (t (mk-term combined-coef (vars (pcar lterms)))))))
 
-;; Produces a list of terms/variables that are like x in list L
-(defun collectlike (x L test selector)
-  (cond ((null L) empty)
+;; Produces a list of terms/variables that are like x in list p
+(defun collectlike (x p test selector)
+  (cond ((null p) empty)
 	((null x) empty)
-	((test (selector x) (selector (car L)))
-	 (cons (car L) (collectlike x (cdr L) test selector)))
-	(t (collectlike x (cdr L) test selector))))
+	((test (selector x) (selector (pcar p)))
+	 (cons (pcar p) (collectlike x (pcdr p) test selector)))
+	(t (collectlike x (pcdr p) test selector))))
 
 ;; Pass 1.
 ;; Simplifies the variables in a polynomial by summing collected like 
@@ -81,12 +80,13 @@
     (cond ((zerop combined-power) empty)
 	  (t (mk-var (letter (vcar lvars)) combined-power)))))
 
-;; Produces a list of terms/variables that are not like x in list L
-(defun removelike (x L test selector)
-  (cond ((null L) empty)
+;; Produces a list of terms/variables that are not like x in list poly
+(defun removelike (x p test selector)
+  (cond ((null p) empty)
 	((null x) empty)
-	((test (selector x) (selector (car L))) (removelike x (cdr L) test selector))
-	(t (cons (car L) (removelike x (cdr L) test selector)))))
+	((test (selector x) (selector (pcar p))) 
+	 (removelike x (pcdr p) test selector))
+	(t (cons (car p) (removelike x (pcdr p) test selector)))))
 
 ;;; ---------------------------------------------------------------------------
 ;;; Functions for p-, p* and simplifier
@@ -154,15 +154,15 @@
 	(t (and (integerp (coef term)) 
 		(equal (vars term) no-vars)))))
 
-;; Asks if all the values in L are true (not nil)
-(defun all (L)
-  (cond ((null L) t)
-	(else (and (not (equal nil (car L))) (all (cdr L))))))
+;; Asks if all the values in list are true (not nil)
+(defun all (list)
+  (cond ((null list) t)
+	(else (and (not (equal nil (car list))) (all (cdr list))))))
 
-;; Asks if any of the values in L are true (not nil)
-(defun any (L)
-  (cond ((null L) nil)
-	(else (or (not (equal nil (car L))) (any (cdr L))))))
+;; Asks if any of the values in list are true (not nil)
+(defun any (list)
+  (cond ((null list) nil)
+	(else (or (not (equal nil (car list))) (any (cdr list))))))
 
 ;; Nested map abbreviation
 (defun mmap (f l1 l2) (map (lambda (x) (map (lambda (y) (f x y)) l2)) l1))
