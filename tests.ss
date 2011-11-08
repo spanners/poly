@@ -1,3 +1,4 @@
+(define results '())
 ;;; Test 1
 ; p = -8 + 2x + 3yx^2 + x + 0z + x^0x
 (define p '((-8 (())) (2 ((x 1))) (3 ((y 1) (x 2))) (1 ((x 1))) (0 ((z 1))) (1 ((x 0) (x 1)))))
@@ -13,19 +14,25 @@
 ;; Test 1.1
 (define expected '((-8 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "1.1: ")
-(display (p= (clean p) expected))
+(define result (p= (clean p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 1.2
 (define expected '((-16 (())) (8 ((x 1))) (6 ((y 1) (x 2)))))
 (display "1.2: ")
-(display (p= (p+ p p) expected))
+(define result (p= (p+ p p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 1.3
 (define expected '((64 (())) (-64 ((x 1))) (-48 ((y 1) (x 2))) (16 ((x 2))) (12 ((x 3) (y 1))) (12 ((y 1) (x 3))) (9 ((y 2) (x 4)))))
 (display "1.3: ")
-(display (p= (p* p p) expected))
+(define result (p= (p* p p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;;; Test 2
@@ -42,43 +49,57 @@
 ;; Test 2.1
 (define expected '())
 (display "2.1: ")
-(display (p= (clean p) expected))
+(define result (p= (clean p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 2.2
 (define expected '((-8 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "2.2: ")
-(display (p= (p+ p q) expected))
+(define result (p= (p+ p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 2.3
 (define expected '((8 (())) (-4 ((x 1))) (-3 ((y 1) (x 2)))))
 (display "2.3: ")
-(display (p= (p- p q) expected))
+(define result (p= (p- p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 2.4
 (define expected '())
 (display "2.4: ")
-(display (p= (p* p q) expected))
+(define result (p= (p* p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 2.5
 (define expected '((-8 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "2.5: ")
-(display (p= (p+ q p) expected))
+(define result (p= (p+ q p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 2.6
 (define expected '((-8 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "2.6: ")
-(display (p= (p- q p) expected))
+(define result (p= (p- q p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 2.7
 (define expected '())
 (display "2.7: ")
-(display (p= (p* q p) expected))
+(define result (p= (p* q p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;;; Test 3
@@ -93,7 +114,9 @@
 ;; Test 3.1
 (define expected #t)
 (display "3.1: ")
-(display (equal? (p= p q) expected))
+(define result (equal? (p= p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;;; Test 4
@@ -108,25 +131,33 @@
 ;; Test 4.1
 (define expected #t)
 (display "4.1: ")
-(display (equal? (p= p q) expected))
+(define result (equal? (p= p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 4.2
 (define expected '((6 ((y 1) (x 2)))))
 (display "4.2: ")
-(display (p= (p+ p q) expected))
+(define result (p= (p+ p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 4.3
 (define expected '())
 (display "4.3: ")
-(display (equal? (p- p q) expected))
+(define result (equal? (p- p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 4.4
 (define expected '((9 ((y 2) (x 4)))))
 (display "4.4: ")
-(display (p= (p* p q) expected))
+(define result (p= (p* p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;;: Test 5
@@ -136,12 +167,14 @@
 (define q '((3 ((y 1) (x 3)))))
 
 ;; Test Description:
-;; To test p=, since p and q are same length with same number of variables, but one variable has unequal? powers
+;; To test p=, since p and q are same length with same number of variables, but one variable has unequal powers
 
 ;; Test 5.1
-(define expected '())
+(define expected #f)
 (display "5.1: ")
-(display (equal? (p= p q) expected))
+(define result (equal? (p= p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;;; Test 6
@@ -158,37 +191,49 @@
 ;; Test 6.1
 (define expected '((-7 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "6.1: ")
-(display (p= (p+ p q) expected))
+(define result (p= (p+ p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 6.2
 (define expected '((9 (())) (-4 ((x 1))) (-3 ((y 1) (x 2)))))
 (display "6.2: ")
-(display (p= (p- p q) expected))
+(define result (p= (p- p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 6.3
 (define expected '((-8 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "6.3: ")
-(display (p= (p* p q) expected))
+(define result (p= (p* p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 6.4
 (define expected '((-7 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "6.4: ")
-(display (p= (p+ q p) expected))
+(define result (p= (p+ q p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 6.5
 (define expected '((-9 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "6.5: ")
-(display (p= (p- q p) expected))
+(define result (p= (p- q p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 6.6
 (define expected '((-8 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "6.6: ")
-(display (p= (p* q p) expected))
+(define result (p= (p* q p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;;; Test 7
@@ -205,37 +250,49 @@
 ;; Test 7.1
 (define expected '((-9 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "7.1: ")
-(display (p= (p+ p q) expected))
+(define result (p= (p+ p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 7.2
 (define expected '((7 (())) (-4 ((x 1))) (-3 ((y 1) (x 2)))))
 (display "7.2: ")
-(display (p= (p- p q) expected))
+(define result (p= (p- p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 7.3
 (define expected '((8 (())) (-4 ((x 1))) (-3 ((y 1) (x 2)))))
 (display "7.3: ")
-(display (p= (p* p q) expected))
+(define result (p= (p* p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 7.4
 (define expected '((-9 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "7.4: ")
-(display (p= (p+ q p) expected))
+(define result (p= (p+ q p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 7.5
 (define expected '((-7 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "7.5: ")
-(display (p= (p- q p) expected))
+(define result (p= (p- q p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 7.6
 (define expected '((8 (())) (-4 ((x 1))) (-3 ((y 1) (x 2)))))
 (display "7.6: ")
-(display (p= (p* q p) expected))
+(define result (p= (p* q p) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;;; Test 8
@@ -251,23 +308,38 @@
 ;; Test 8.1
 (define expected #t)
 (display "8.1: ")
-(display (equal? (p= p q) expected))
+(define result (equal? (p= p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
  
 ;; Test 8.2
 (define expected '((6 ((y 1) (x 2))) (4 ((z 2) (x 3) (y 1)))))
 (display "8.2: ")
-(display (p= (p+ p q) expected))
+(define result (p= (p+ p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 8.3
 (define expected '())
 (display "8.3: ")
-(display (equal? (p- p q) expected))
+(define result (equal? (p- p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
 
 ;; Test 8.4
 (define expected '((12 ((y 2) (x 5) (z 2))) (9 ((y 2) (x 4))) (4 ((z 4) (x 6) (y 2)))))
 (display "8.4: ")
-(display (p= (p* p q) expected))
+(define result (p= (p* p q) expected))
+(define results (cons result results))
+(display result)
 (display "\n")
+
+(display "-----------\n")
+(define passed-tests (accumulate + 0 (map (lambda (x) (if (equal? x #t) 1 0)) results)))
+(display (length results))
+(display " run / ")
+(display passed-tests)
+(display " passed.\n")
