@@ -7,36 +7,21 @@
 
 (define (simp-terms p)
   (let ((poly
-  (simplifier p combine-terms vars= (lambda (term) (vars term)))))
+  (simplifier p combine-terms (lambda (term) (vars= (vars (pcar p)) (vars term))))))
     (cond ((no-vars? poly) empty)
 	  (else poly))))
 
-(define (simplifier p combiner eq-test? selector)
+(define (simplifier p combiner eq-test?)
   (cond ((null? p) empty)
-	(else (let ((simplified
-		   (combiner (collect-like
-			       (pcar p)
-			       p
-			       eq-test?
-			       selector))))
+	(else (let ((simplified (combiner (filter eq-test? p))))
 	     (cond ((null? simplified) empty)
 		   (else (cons simplified
-		      (simplifier
-			(remove-like simplified
-				(pcdr p) eq-test? selector)
-				  combiner eq-test? selector))))))))
+		      (simplifier (filter (lambda (x) (not (eq-test? x)) (pcar p))) combiner eq-test?))))))))
 
 (define (combine-terms like-terms)
   (let ((combined-coef (accumulate + 0 (map coef like-terms))))
     (cond ((zero? combined-coef) empty)
 	  (else (mk-term combined-coef (vars (pcar like-terms)))))))
-
-(define (collect-like x p eq-test? selector)
-  (cond ((null? p) empty)
-	((null? x) empty)
-	((eq-test? (selector x) (selector (pcar p)))
-	 (cons (pcar p) (collect-like x (pcdr p) eq-test? selector)))
-	(else (collect-like x (pcdr p) eq-test? selector))))
 
 (define (simp-vars p)
   (cond ((null? p) empty)
@@ -52,13 +37,6 @@
   (let ((combined-power (accumulate + 0 (map power like-vars))))
     (cond ((zero? combined-power) empty)
 	  (else (mk-var (letter (vcar like-vars)) combined-power)))))
-
-(define (remove-like x p eq-test? selector)
-  (cond ((null? p) empty)
-	((null? x) empty)
-	((eq-test? (selector x) (selector (pcar p)))
-	 (remove-like x (pcdr p) eq-test? selector))
-	(else (cons (car p) (remove-like x (pcdr p) eq-test? selector)))))
 
 (define (negate p) (map (lambda (x) (mk-term (* -1 (coef x)) (vars x))) p))
 
