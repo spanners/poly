@@ -1,31 +1,28 @@
 (define (p+ p1 p2) (clean (append p1 p2)))
 (define (p- p1 p2) (p+ p1 (negate p2)))
-(define (p* p1 p2) (clean (accumulate append empty (cartesian-map term* p1 p2))))
+(define (p* p1 p2) (clean (fold-right append '() (cartesian-map term* p1 p2))))
 (define (p= p1 p2) (null? (p- p1 p2)))
 
 (define (clean p) (simp-terms (simp-vars p)))
 
 (define (simp-terms p)
-  (let ((poly
-  (simplifier p combine-terms vars= (lambda (term) (vars term)))))
-    (cond ((no-vars? poly) empty)
-	  (else poly))))
+  (simplify p combine-terms vars= (lambda (term) (vars term))))
 
-(define (simplifier p combiner eq-test? selector)
-  (cond ((null? p) empty)
-	(else (let ((simplified 
-		      (combiner (collect-like (pcar p) p eq-test? selector))))
-	     (cond ((null? simplified) empty)
-		   (else (cons simplified
-		      (simplifier
-			(remove-like simplified (pcdr p) eq-test? selector)
-				  combiner eq-test? selector))))))))
+(define (simplify p combiner eq-test? selector)
+  (define (simplify-helper p result)
+	  (if (null? p) result
+	    (let ((simplified
+		    (combiner (collect-like (pcar p) p eq-test? selector))))
+	      (if (null? simplified) result
+		(simplify-helper
+		  (remove-like simplified (pcdr p) eq-test? selector)
+		  (cons simplified result))))))
+  (simplify-helper p '()))
 
 (define (combine-terms like-terms)
-  (let ((combined-coef (accumulate + 0 (map coef like-terms))))
-    (cond ((zero? combined-coef) empty)
-	  (else (mk-term combined-coef (vars (pcar like-terms)))))))
-
+  (let ((combined-coef (fold-right + 0 (map coef like-terms))))
+    (if (zero? combined-coef) '()
+      (mk-term combined-coef (vars (pcar like-terms))))))
 
 (define (collect-like x p eq-test? selector)
   (filter (lambda (a) (eq-test? (selector a) (selector x))) p))
@@ -34,24 +31,25 @@
   (filter (lambda (a) (not (eq-test? (selector a) (selector x)))) p ))
 
 (define (simp-vars p)
-  (cond ((null? p) empty)
-	((constant? (pcar p)) (cons (pcar p) (simp-vars (pcdr p))))
-	(else (cons (mk-term (coef (pcar p))
-			     (simplifier (vars (pcar p))
-					 combine-vars
-					 equal?
-					 (lambda (v) (vcar v))))
-		    (simp-vars (pcdr p))))))
+  (define (simp-vars-helper p result)
+    (cond ((null? p) result)
+	  ((constant? (pcar p)) (cons (pcar p) (simp-vars (pcdr p))))
+	  (else (simp-vars-helper
+		  (pcdr p)
+		  (cons (mk-term (coef (pcar p))
+				 (simplify (vars (pcar p))
+					   combine-vars
+					   equal?
+					   (lambda (v) (vcar v))))
+			result)))))
+  (simp-vars-helper p '()))
 
 (define (combine-vars like-vars)
-  (let ((combined-power (accumulate + 0 (map power like-vars))))
-    (cond ((zero? combined-power) empty)
-	  (else (mk-var (letter (vcar like-vars)) combined-power)))))
+  (let ((combined-pow (fold-right + 0 (map power like-vars))))
+    (if (zero? combined-pow) '()
+      (mk-var (letter (vcar like-vars)) combined-pow))))
 
-(define (negate p) 
-  (map (lambda (x) (mk-term (* -1 (coef x)) 
-			    (vars x))) 
-       p))
+(define (negate p) (map (lambda (x) (mk-term (* -1 (coef x)) (vars x))) p))
 
 (define (term* t1 t2)
  (mk-term (* (coef t1) (coef t2))
@@ -60,7 +58,7 @@
 		((constant? t2) (vars t1))
 		(else (append (vars t1) (vars t2))))))
 
-(define (vars= vs1 vs2) 
+(define (vars= vs1 vs2)
   (cond ((and (null? vs1) (null? vs2)) #t)
       	((and (no-vars? vs1) (no-vars? vs2)) #t)
       	((or (no-vars? vs1) (no-vars? vs2)) #f)
@@ -68,14 +66,11 @@
 		   (all-true? (map any-true? (cartesian-map v= vs1 vs2)))))))
 
 (define (v= v1 v2) 
-  (and (equal? (letter v1) (letter v2))
-       (= (power v1) (power v2))))
+  (and (equal? (letter v1) (letter v2)) (= (power v1) (power v2))))
 
-(define (mk-term coeff variabs) 
-  (cons coeff (cons variabs empty)))
+(define (mk-term coeff variabs) (cons coeff (cons variabs '())))
 
-(define (mk-var ltr pow) 
-  (mk-term ltr pow))
+(define (mk-var ltr pow) (mk-term ltr pow))
 
 (define (constant? term)
   (cond ((null? term) #f)
@@ -83,41 +78,26 @@
 	(else (and (integer? (coef term)) 
 		(no-vars? (vars term))))))
 
-(define (all-true? list)
-  (cond ((null? list) #t)
-	(else (and (not (equal? #f (car list))) 
-		   (all-true? (cdr list))))))
+(define (all-true? l)
+  (if (null? l) #t (and (not (equal? #f (car l)))
+			(all-true? (cdr l)))))
 
-(define (any-true? list)
-  (cond ((null? list) #f)
-	(else (or (not (equal? #f (car list))) 
-		  (any-true? (cdr list))))))
-
-
-(define (accumulate combiner null-value l) 
-  (cond ((null? l) null-value) 
-	(else (combiner (car l) 
-			(accumulate combiner null-value (cdr l))))))
+(define (any-true? l)
+  (if (null? l) #f (or (not (equal? #f (car l)))
+		       (any-true? (cdr l)))))
 
 (define (filter pred? l)
   (fold-right (lambda (x acc) (if (pred? x) (cons x acc) acc)) '() l))
 
-(define (fold-right f end l) 
-  (if (null? l) end
-    (f (car l) (fold-right f end (cdr l)))))
+(define (fold-right f end l) (if (null? l) end 
+			       (f (car l) (fold-right f end (cdr l)))))
 
-(define (cartesian-map f l1 l2) 
+(define (cartesian-map f l1 l2)
   (map (lambda (x) (map (lambda (y) (f x y)) l2)) l1))
 
-(define (no-vars? x) (equal? no-vars x))
+(define (no-vars? x) (equal? no-vars x)) (define pcar car) (define pcdr cdr) 
+(define coef car) (define vars cadr) (define vcar car) (define vcdr cdr) 
+(define letter car) (define power cadr) (define no-vars '(()))
 
-(define pcar car)
-(define pcdr cdr)
-(define coef car)
-(define vars cadr)
-(define vcar car)
-(define vcdr cdr)
-(define letter car)
-(define power cadr)
-(define empty '())
-(define no-vars '(()))
+(load "tests.ss")
+(exit)

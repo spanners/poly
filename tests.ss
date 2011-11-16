@@ -338,7 +338,7 @@
 (display "\n")
 
 (display "-----------\n")
-(define passed-tests (accumulate + 0 (map (lambda (x) (if (equal? x #t) 1 0)) results)))
+(define passed-tests (fold-right + 0 (map (lambda (x) (if (equal? x #t) 1 0)) results)))
 (display (length results))
 (display " run / ")
 (display passed-tests)
