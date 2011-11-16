@@ -7,21 +7,36 @@
 
 (define (simp-terms p)
   (let ((poly
-  (simplifier p combine-terms (lambda (term) (vars= (vars (pcar p)) (vars term))))))
+  (simplifier p combine-terms vars= (lambda (term) (vars term)))))
     (cond ((no-vars? poly) empty)
 	  (else poly))))
 
-(define (simplifier p combiner eq-test?)
+(define (simplifier p combiner eq-test? selector)
   (cond ((null? p) empty)
-	(else (let ((simplified (combiner (filter eq-test? p))))
+	(else (let ((simplified 
+		      (combiner (collect-like (pcar p) p eq-test? selector))))
 	     (cond ((null? simplified) empty)
 		   (else (cons simplified
-		      (simplifier (filter (lambda (x) (not (eq-test? x)) (pcar p))) combiner eq-test?))))))))
+		      (simplifier
+			(remove-like simplified (pcdr p) eq-test? selector)
+				  combiner eq-test? selector))))))))
 
 (define (combine-terms like-terms)
   (let ((combined-coef (accumulate + 0 (map coef like-terms))))
     (cond ((zero? combined-coef) empty)
 	  (else (mk-term combined-coef (vars (pcar like-terms)))))))
+
+(define (fold-right f end l) (if (null? l) end
+    (f (car l) (fold-right f end (cdr l)))))
+
+(define (pfilter eq-test? poly selector tm)
+  (fold-right (lambda (x acc) (if (eq-test? (selector x) (selector tm)) (cons x acc) acc)) '() poly))
+
+(define (collect-like x p eq-test? selector)
+  (pfilter eq-test? p selector x))
+
+(define (remove-like x p eq-test? selector)
+  (pfilter (lambda (a b) (not (eq-test? a b))) p selector x))
 
 (define (simp-vars p)
   (cond ((null? p) empty)
