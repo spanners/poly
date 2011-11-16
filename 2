@@ -26,6 +26,8 @@
     (cond ((zero? combined-coef) empty)
 	  (else (mk-term combined-coef (vars (pcar like-terms)))))))
 
+(define (filter pred? l)
+  (foldr (lambda (x acc) (if (pred? x) (cons x acc) acc)) '() l))
 
 (define (collect-like x p eq-test? selector)
   (filter (lambda (a) (eq-test? (selector a) (selector x))) p))
@@ -94,17 +96,14 @@
 		  (any-true? (cdr list))))))
 
 
-(define (accumulate combiner null-value l) 
-  (cond ((null? l) null-value) 
-	(else (combiner (car l) 
-			(accumulate combiner null-value (cdr l))))))
+(define (accumulate combiner null-value list) 
+  (cond ((null? list) null-value) 
+	(else (combiner (car list) 
+			(accumulate combiner null-value (cdr list))))))
 
-(define (filter pred? l)
-  (fold-right (lambda (x acc) (if (pred? x) (cons x acc) acc)) '() l))
-
-(define (fold-right f end l) 
+(define (foldr f end l) 
   (if (null? l) end
-    (f (car l) (fold-right f end (cdr l)))))
+    (f (car l) (foldr f end (cdr l)))))
 
 (define (cartesian-map f l1 l2) 
   (map (lambda (x) (map (lambda (y) (f x y)) l2)) l1))
