@@ -78,13 +78,11 @@
         (else (and (integer? (coef term)) 
                    (no-vars? (vars term))))))
 
-(define (all-true? l)
-  (if (null? l) #t (and (not (equal? #f (car l)))
-                        (all-true? (cdr l)))))
+(define (all-true? l) 
+  (foldr (lambda (x xs) (and (not (equal? #f x)) xs)) #t l))
 
-(define (any-true? l)
-  (if (null? l) #f (or (not (equal? #f (car l)))
-                       (any-true? (cdr l)))))
+(define (any-true? l) 
+  (foldr (lambda (x xs) (or (not (equal? #f x)) xs)) #f l))
 
 (define (cartesian-map f l1 l2)
   (map (lambda (x) (map (lambda (y) (f x y)) l2)) l1))
