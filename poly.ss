@@ -6,7 +6,7 @@
 (define (clean p) (simp-terms (simp-vars p)))
 
 (define (simp-terms p)
-  (simplify p combine-terms vars= (lambda (term) (vars term))))
+  (simplify p combine-terms vars= vars))
 
 (define (simplify p combiner eq-test? selector)
   (define (simplify-helper p result)
@@ -40,7 +40,7 @@
                                 (simplify (vars (pcar p))
                                           combine-vars
                                           equal?
-                                          (lambda (v) (vcar v))))
+                                          vcar))
                        result)))))
   (simp-vars-helper p '()))
 
