@@ -25,7 +25,6 @@
 				     ((constant? t1) (cadr t2))
                  	       ((constant? t2) (cadr t1))
 			       (else (append (cadr t1) (cadr t2))))))
-
 (define (vars= vs1 vs2) (cond ((and (null? vs1) (null? vs2)) #t)
 			      ((and (equal? '(()) vs1) (equal? '(()) vs2)) #t)
 			      ((or (equal? '(()) vs1) (equal? '(()) vs2)) #f)
