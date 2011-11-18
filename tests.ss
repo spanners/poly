@@ -14,7 +14,7 @@
 ;; Test 1.1
 (define expected '((-8 (())) (4 ((x 1))) (3 ((y 1) (x 2)))))
 (display "1.1: ")
-(define result (p= (clean p) expected))
+(define result (p= (simp-terms (simp-vars p)) expected))
 (define results (cons result results))
 (display result)
 (display "\n")
@@ -49,7 +49,7 @@
 ;; Test 2.1
 (define expected '())
 (display "2.1: ")
-(define result (p= (clean p) expected))
+(define result (p= (simp-terms (simp-vars p)) expected))
 (define results (cons result results))
 (display result)
 (display "\n")
