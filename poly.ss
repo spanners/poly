@@ -73,10 +73,9 @@
 (define (mk-var ltr pow) (mk-term ltr pow))
 
 (define (constant? term)
-  (cond ((null? term) #f)
-        ((null? (coef term)) #f)
-        (else (and (integer? (coef term)) 
-                   (no-vars? (vars term))))))
+  (if (null? term) #f
+    (and (integer? (coef term)) 
+	 (no-vars? (vars term)))))
 
 (define (all-true? l) 
   (foldr (lambda (x xs) (and (not (equal? #f x)) xs)) #t l))
