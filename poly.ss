@@ -1,6 +1,8 @@
+(require srfi/1) 
+
 (define (p+ p1 p2) (clean (append p1 p2)))
 (define (p- p1 p2) (p+ p1 (negate-poly p2)))
-(define (p* p1 p2) (clean (foldr append '() (cartesian-map term* p1 p2))))
+(define (p* p1 p2) (clean (concatenate (cartesian-map term* p1 p2))))
 (define (p= p1 p2) (null? (p- p1 p2)))
 
 (define (clean p) (simp-terms (simp-vars p)))
@@ -61,7 +63,8 @@
         ((and (no-vars? vs1) (no-vars? vs2)) #t)
         ((or (no-vars? vs1) (no-vars? vs2)) #f)
         (else (and (= (length vs1) (length vs2))
-                   (all-true? (map any-true? (cartesian-map v= vs1 vs2)))))))
+                   (every identity (map (lambda (l) (any identity l)) 
+				  (cartesian-map v= vs1 vs2)))))))
 
 (define (v= v1 v2) 
   (and (equal? (letter v1) (letter v2)) (= (power v1) (power v2))))
@@ -76,12 +79,6 @@
   (if (null? term) #f
     (and (integer? (coef term)) 
 	 (no-vars? (vars term)))))
-
-(define (all-true? l) 
-  (foldr (lambda (x xs) (and (not (equal? #f x)) xs)) #t l))
-
-(define (any-true? l) 
-  (foldr (lambda (x xs) (or (not (equal? #f x)) xs)) #f l))
 
 (define (cartesian-map f l1 l2)
   (map (lambda (x) (map (lambda (y) (f x y)) l2)) l1))
