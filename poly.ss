@@ -27,10 +27,10 @@
         (mk-term combined-coef (vars (pcar like-terms))))))
 
 (define (collect-like x p eq-test? selector)
-  (filter (lambda (a) (eq-test? (selector a) (selector x))) p))
+  (filter (λ (a) (eq-test? (selector a) (selector x))) p))
 
 (define (remove-like x p eq-test? selector)
-  (collect-like x p (lambda (a b) (not (eq-test? a b))) selector))
+  (collect-like x p (λ (a b) (not (eq-test? a b))) selector))
 
 (define (simp-vars p)
   (define (simp-vars-helper p result)
@@ -63,13 +63,13 @@
         ((and (no-vars? vs1) (no-vars? vs2)) #t)
         ((or (no-vars? vs1) (no-vars? vs2)) #f)
         (else (and (= (length vs1) (length vs2))
-                   (every identity (map (lambda (l) (any identity l)) 
+                   (every identity (map (λ (l) (any identity l)) 
 				  (cartesian-map v= vs1 vs2)))))))
 
 (define (v= v1 v2) 
   (and (equal? (letter v1) (letter v2)) (= (power v1) (power v2))))
 
-(define (negate-poly p) (map (lambda (x) (mk-term (* -1 (coef x)) (vars x))) p))
+(define (negate-poly p) (map (λ (x) (mk-term (* -1 (coef x)) (vars x))) p))
 
 (define (mk-term coeff variabs) (cons coeff (cons variabs '())))
 
@@ -81,7 +81,7 @@
 	 (no-vars? (vars term)))))
 
 (define (cartesian-map f l1 l2)
-  (map (lambda (x) (map (lambda (y) (f x y)) l2)) l1))
+  (map (λ (x) (map (λ (y) (f x y)) l2)) l1))
 
 (define (no-vars? x) (equal? no-vars x)) (define pcar car) (define pcdr cdr) 
 (define coef car) (define vars cadr) (define vcar car) (define vcdr cdr) 
