@@ -35,6 +35,26 @@
 (display result)
 (display "\n")
 
+; Test 1.4
+(define y '((-1 (()))))
+(define z '((-2 (()))))
+(define expected #t)
+(display "1.4: ")
+(define result (eqv? (vars= (cadr (car z)) (cadr (car y))) expected))
+(define results (cons result results))
+(display result)
+(display "\n")
+
+; Test 1.5
+(define y '((-1 (()))))
+(define z '((-2 ((x 2)))))
+(define expected #f)
+(display "1.5: ")
+(define result (eqv? (vars= (cadr (car z)) (cadr (car y))) expected))
+(define results (cons result results))
+(display result)
+(display "\n")
+
 ;;; Test 2
 ; p = 0
 ; q =  -8 + 2x + 3yx^2 + x + 0z + x^0x
@@ -343,3 +363,5 @@
 (display " run / ")
 (display passed-tests)
 (display " passed.\n")
+
+(define p '((-8 (())) (2 ((x 1))) (3 ((y 1) (x 2))) (1 ((x 1))) (0 ((z 1))) (1 ((x 0) (x 1)))))
