@@ -5,9 +5,7 @@ Compatible with the Racket Scheme interpreter
 
 To run, type in a Linux console with Racket installed:
 
-```bash
 $racket -f poly.ss -i
-```
 
 This runs the tests and provides you with a prompt to interact with the 
 calculator
