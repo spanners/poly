@@ -1,13 +1,17 @@
 Polynomial calculator written in Scheme
 ================================
 
-Compatible with the Racket Scheme interpreter
+Compatible with the Racket v5.2 Scheme interpreter
 
 To run, type in a Linux console with Racket installed:
 
 $racket -f poly.ss -i
 
-This runs the tests and provides you with a prompt to interact with the 
-calculator
+This provides you with a prompt to interact with the 
+calculator.
 
-The representation is shown through example in tests.ss
+To run the tests, type:
+
+$racket -f tests.ss
+
+The representation of polynomials is shown through example in tests.ss

@@ -75,5 +75,3 @@
 
 (define pcar car) (define pcdr cdr) (define coef car) (define vars cadr) (define vcar car) 
 (define vcdr cdr) (define letter car) (define power cadr) (define no-vars '(()))
-
-(load "tests.ss")

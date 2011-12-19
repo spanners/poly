@@ -1,3 +1,5 @@
+(load "poly.ss")
+
 (define results '())
 ;;; Test 1
 ; p = -8 + 2x + 3yx^2 + x + 0z + x^0x
