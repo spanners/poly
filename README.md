@@ -1,5 +1,5 @@
 Polynomial calculator written in Scheme
-================================
+=======================================
 
 Compatible with the Racket v5.2 Scheme interpreter
 
